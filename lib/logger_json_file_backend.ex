@@ -1,0 +1,2 @@
+defmodule LoggerJsonFileBackend do
+end
