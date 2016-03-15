@@ -16,8 +16,9 @@ defmodule LoggerJSONFileBackend do
   def handle_event({level, _gl, {Logger, msg, ts, md}}, %{level: min_level}=state) do
     if is_nil(min_level) or Logger.compare_levels(level, min_level) != :lt do
       log_event(level, msg, ts, md, state)
+    else
+      {:ok, state}
     end
-    {:ok, state}
   end
 
   defp log_event(level, msg, ts, md, %{path: path, io_device: nil}=state) when is_binary(path) do
@@ -33,6 +34,7 @@ defmodule LoggerJSONFileBackend do
     if !is_nil(inode) and inode == inode(path) do
       message = json_encoder.encode!(Map.merge(%{level: level, message: msg, time: format_time(ts)}, take_metadata(md, keys))) <> "\n"
       IO.write(io_device, message)
+      {:ok, state}
     else
       File.close(io_device)
       log_event(level, msg, ts, md, %{state | io_device: nil, inode: nil})

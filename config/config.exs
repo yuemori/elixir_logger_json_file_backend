@@ -28,4 +28,4 @@ use Mix.Config
 # here (which is why it is important to import them last).
 #
 #     import_config "#{Mix.env}.exs
-config :logger, backends: []
+import_config "#{Mix.env}.exs"
