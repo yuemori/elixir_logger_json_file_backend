@@ -1,20 +1,29 @@
-# LoggerJsonFileBackend
+LoggerJsonFileBackend
+===
 
-**TODO: Add description**
+LoggerJsonFileBackend is elixir `logger` backend that writes json logs to a file.
 
-## Installation
+Configuration
+---
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
+This logger backend provides follow options:
 
-  1. Add logger_json_file_backend to your list of dependencies in `mix.exs`:
+| name         | description |
+| ------------ | ----------- |
+| path         | log file path. this option is "MUST" |
+| level        | minimum logging level. default is `:info` | 
+| metadata     | included metadata keys list. detault is empty list |
+| json\_encoder | using json encoder. default [json](https://hex.pm/packages/json) |
 
-        def deps do
-          [{:logger_json_file_backend, "~> 0.0.1"}]
-        end
+You need to add logger backend setting
 
-  2. Ensure logger_json_file_backend is started before your application:
+```
+config :logger,
+  backends: [{LoggerJSONFileBackend, :log_name}]
 
-        def application do
-          [applications: [:logger_json_file_backend]]
-        end
-
+config :logger, :log_name,
+  path: "/var/log/my_app/app.log"
+  level: :info
+  metadata: [:request_id, :user_id, :req_params]
+  json_encoder: JSON # or Poison
+```

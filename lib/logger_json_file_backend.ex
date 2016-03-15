@@ -29,9 +29,9 @@ defmodule LoggerJSONFileBackend do
     end
   end
 
-  defp log_event(level, msg, ts, md, %{path: path, io_device: io_device, inode: inode, metadata: keys, json_parser: json_parser}=state) when is_binary(path) do
+  defp log_event(level, msg, ts, md, %{path: path, io_device: io_device, inode: inode, metadata: keys, json_encoder: json_encoder}=state) when is_binary(path) do
     if !is_nil(inode) and inode == inode(path) do
-      message = json_parser.encode!(Map.merge(%{level: level, message: msg}, take_metadata(md, keys))) <> "\n"
+      message = json_encoder.encode!(Map.merge(%{level: level, message: msg}, take_metadata(md, keys))) <> "\n"
       IO.write(io_device, message)
     else
       File.close(io_device)
@@ -68,7 +68,7 @@ defmodule LoggerJSONFileBackend do
   end
 
   defp configure(name, opts) do
-    state = %{name: nil, path: nil, io_device: nil, inode: nil, level: nil, metadata: nil, json_parser: nil}
+    state = %{name: nil, path: nil, io_device: nil, inode: nil, level: nil, metadata: nil, json_encoder: nil}
     configure(name, opts, state)
   end
 
@@ -77,11 +77,11 @@ defmodule LoggerJSONFileBackend do
     opts = Keyword.merge(env, opts)
     Application.put_env(:logger, name, opts)
 
-    level       = Keyword.get(opts, :level)
-    metadata    = Keyword.get(opts, :metadata, []) 
-    path        = Keyword.get(opts, :path)
-    json_parser = Keyword.get(opts, :json_parser, JSON)
+    level        = Keyword.get(opts, :level, :info)
+    metadata     = Keyword.get(opts, :metadata, [])
+    path         = Keyword.get(opts, :path)
+    json_encoder = Keyword.get(opts, :json_encoder, JSON)
 
-    %{state | name: name, path: path, level: level, metadata: metadata, json_parser: json_parser}
+    %{state | name: name, path: path, level: level, metadata: metadata, json_encoder: json_encoder}
   end
 end

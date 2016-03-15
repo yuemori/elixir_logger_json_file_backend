@@ -3,31 +3,29 @@ defmodule LoggerJSONFileBackend.Mixfile do
 
   def project do
     [app: :logger_json_file_backend,
-     version: "0.0.1",
+     version: "0.1.0",
+     description: "Logger backend that write a json map per line to a file",
      elixir: "~> 1.2",
+     package: package,
      deps: deps]
   end
 
-  # Configuration for the OTP application
-  #
-  # Type "mix help compile.app" for more information
   def application do
     [applications: []]
   end
 
-  # Dependencies can be Hex packages:
-  #
-  #   {:mydep, "~> 0.3.0"}
-  #
-  # Or git/path repositories:
-  #
-  #   {:mydep, git: "https://github.com/elixir-lang/mydep.git", tag: "0.1.0"}
-  #
-  # Type "mix help deps" for more examples and options
   defp deps do
     [
-      {:poison, "~> 1.5 or ~> 2.0"},
-      {:json, "~> 0.3.2"}
+      {:json, "~> 0.3.2"},
+      {:poison, "~> 1.5 or ~> 2.0", only: :test},
+    ]
+  end
+
+  defp package do
+    [
+      mainteners: ["Hidetaka Kojo"],
+      licenses: ["ISC"],
+      links: %{"GitHub" => "https://github.com/xflagstudio/elixir_logger_json_file_backend"}
     ]
   end
 end

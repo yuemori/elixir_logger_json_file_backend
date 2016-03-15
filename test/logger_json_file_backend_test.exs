@@ -16,7 +16,7 @@ defmodule LoggerJSONFileBackendTest do
     refute File.exists?(path)
     Logger.info("msg body", [foo: "bar", baz: []])
     assert File.exists?(path)
-    json_log = Poison.decode! log
+    json_log = JSON.decode! log
     assert json_log["level"] == "info"
     assert json_log["message"] == "msg body"
     assert json_log["foo"] == "bar"
@@ -28,6 +28,16 @@ defmodule LoggerJSONFileBackendTest do
     json_log = Poison.decode! log
     refute is_nil(json_log["foo"])
     assert json_log["foo"]["bar"] == ["baz"]
+  end
+
+  test "use another encoder" do
+    config [path: "test/logs/test.log", level: :info, json_encoder: Poison, metadata: [:foo]]
+    Logger.info("msg body", [foo: "bar", baz: []])
+    json_log = Poison.decode! log
+    assert json_log["level"] == "info"
+    assert json_log["message"] == "msg body"
+    assert json_log["foo"] == "bar"
+    assert is_nil(json_log["baz"])
   end
 
   defp path do
