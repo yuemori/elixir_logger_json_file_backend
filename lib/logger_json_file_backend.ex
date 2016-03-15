@@ -88,7 +88,7 @@ defmodule LoggerJSONFileBackend do
     level        = Keyword.get(opts, :level, :info)
     metadata     = Keyword.get(opts, :metadata, [])
     path         = Keyword.get(opts, :path)
-    json_encoder = Keyword.get(opts, :json_encoder, JSON)
+    json_encoder = Keyword.get(opts, :json_encoder, Poison)
 
     %{state | name: name, path: path, level: level, metadata: metadata, json_encoder: json_encoder}
   end

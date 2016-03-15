@@ -13,7 +13,7 @@ This logger backend provides follow options:
 | path         | log file path. this option is "MUST" |
 | level        | minimum logging level. default is `:info` | 
 | metadata     | included metadata keys list. detault is empty list |
-| json\_encoder | using json encoder. default [json](https://hex.pm/packages/json) |
+| json\_encoder | using json encoder. default [poison](https://github.com/devinus/poison) |
 
 You need to add logger backend setting
 

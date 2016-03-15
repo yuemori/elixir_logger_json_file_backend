@@ -16,7 +16,7 @@ defmodule LoggerJSONFileBackendTest do
     refute File.exists?(path)
     Logger.info("msg body", [foo: "bar", baz: []])
     assert File.exists?(path)
-    json_log = JSON.decode! log
+    json_log = Poison.decode! log
     assert json_log["level"] == "info"
     assert json_log["message"] == "msg body"
     assert Regex.match?(~r/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}/, json_log["time"])
@@ -32,9 +32,9 @@ defmodule LoggerJSONFileBackendTest do
   end
 
   test "use another encoder" do
-    config [path: "test/logs/test.log", level: :info, json_encoder: Poison, metadata: [:foo]]
+    config [path: "test/logs/test.log", level: :info, json_encoder: JSON, metadata: [:foo]]
     Logger.info("msg body", [foo: "bar", baz: []])
-    json_log = Poison.decode! log
+    json_log = JSON.decode! log
     assert json_log["level"] == "info"
     assert json_log["message"] == "msg body"
     assert Regex.match?(~r/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}/, json_log["time"])
