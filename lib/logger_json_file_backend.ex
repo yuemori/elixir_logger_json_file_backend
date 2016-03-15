@@ -32,7 +32,7 @@ defmodule LoggerJSONFileBackend do
 
   defp log_event(level, msg, ts, md, %{path: path, io_device: io_device, inode: inode, metadata: keys, json_encoder: json_encoder}=state) when is_binary(path) do
     if !is_nil(inode) and inode == inode(path) do
-      message = json_encoder.encode!(Map.merge(%{level: level, message: msg, time: format_time(ts)}, take_metadata(md, keys))) <> "\n"
+      message = json_encoder.encode!(Map.merge(%{level: level, message: (msg |> IO.iodata_to_binary), time: format_time(ts)}, take_metadata(md, keys))) <> "\n"
       IO.write(io_device, message)
       {:ok, state}
     else

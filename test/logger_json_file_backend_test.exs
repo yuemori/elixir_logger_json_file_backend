@@ -42,6 +42,12 @@ defmodule LoggerJSONFileBackendTest do
     assert is_nil(json_log["baz"])
   end
 
+  test "message should be string" do
+    Logger.info(["msg", 32, "body"])
+    json_log = Poison.decode! log
+    assert json_log["message"] == "msg body"
+  end
+
   defp path do
     {:ok, path} = GenEvent.call(Logger, @backend, :path)
     path
