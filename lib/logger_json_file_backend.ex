@@ -31,12 +31,18 @@ defmodule LoggerJSONFileBackend do
 
   defp log_event(level, msg, ts, md, %{path: path, io_device: io_device, inode: inode, metadata: keys, json_encoder: json_encoder}=state) when is_binary(path) do
     if !is_nil(inode) and inode == inode(path) do
-      message = json_encoder.encode!(Map.merge(%{level: level, message: msg}, take_metadata(md, keys))) <> "\n"
+      message = json_encoder.encode!(Map.merge(%{level: level, message: msg, time: format_time(ts)}, take_metadata(md, keys))) <> "\n"
       IO.write(io_device, message)
     else
       File.close(io_device)
       log_event(level, msg, ts, md, %{state | io_device: nil, inode: nil})
     end
+  end
+
+  defp format_time({date, time}) do
+    [Logger.Utils.format_date(date), Logger.Utils.format_time(time)]
+    |> Enum.map(&IO.iodata_to_binary/1)
+    |> Enum.join(" ")
   end
 
   defp take_metadata(metadata, keys) do

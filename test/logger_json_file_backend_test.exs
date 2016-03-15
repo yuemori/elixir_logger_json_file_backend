@@ -19,6 +19,7 @@ defmodule LoggerJSONFileBackendTest do
     json_log = JSON.decode! log
     assert json_log["level"] == "info"
     assert json_log["message"] == "msg body"
+    assert Regex.match?(~r/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}/, json_log["time"])
     assert json_log["foo"] == "bar"
     assert is_nil(json_log["baz"])
   end
@@ -36,6 +37,7 @@ defmodule LoggerJSONFileBackendTest do
     json_log = Poison.decode! log
     assert json_log["level"] == "info"
     assert json_log["message"] == "msg body"
+    assert Regex.match?(~r/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}/, json_log["time"])
     assert json_log["foo"] == "bar"
     assert is_nil(json_log["baz"])
   end
