@@ -24,6 +24,19 @@ config :logger,
 config :logger, :log_name,
   path: "/var/log/my_app/app.log"
   level: :info
-  metadata: [:request_id, :user_id, :req_params]
+  metadata: [:request_id, :user_id, :method, :path, :req_params]
   json_encoder: JSON # or Poison
+```
+
+Use case
+---
+
+This module is assumed to be used with a custom plug logger.
+
+```
+Logger.info("request", [
+  method:     conn.method,
+  path:       conn.request_path,
+  req_params: conn.params,
+])
 ```
