@@ -51,6 +51,7 @@ defmodule LoggerJSONFileBackendTest do
     assert Regex.match?(~r/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}/, json_log["time"])
     assert json_log["foo"] == "bar"
     assert json_log["baz"] == %{"hoge" => 1, "fuga" => 2}
+    assert not Map.has_key?(json_log, :pid)
   end
 
   test "message should be string" do
