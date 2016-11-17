@@ -6,7 +6,7 @@ defmodule LoggerJSONFileBackendTest do
   Logger.add_backend @backend
 
   setup do
-    config [path: "test/logs/test.log", level: :info, metadata: [:foo]]
+    config [path: "test/logs/test.log", level: :info, metadata: [:foo], disable_metadata_triming: false, json_encoder: Poison]
     on_exit fn ->
       path && File.rm_rf!(Path.dirname(path))
     end

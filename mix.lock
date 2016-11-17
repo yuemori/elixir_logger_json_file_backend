@@ -1,2 +1,2 @@
-%{"json": {:hex, :json, "0.3.3"},
-  "poison": {:hex, :poison, "2.1.0"}}
+%{"json": {:hex, :json, "0.3.3", "373eb4f7321f898ad6772999f30daf65f9f38e1d3dd4d798d7a82d3b123fe1d3", [:mix], []},
+  "poison": {:hex, :poison, "2.1.0", "f583218ced822675e484648fa26c933d621373f01c6c76bd00005d7bd4b82e27", [:mix], []}}
