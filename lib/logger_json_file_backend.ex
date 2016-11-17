@@ -23,6 +23,10 @@ defmodule LoggerJSONFileBackend do
     end
   end
 
+  def handle_event(:flush, state) do
+    {:ok, state}
+  end
+
   defp log_event(level, msg, ts, md, %{path: path, io_device: nil}=state) when is_binary(path) do
     case open_log(path) do
       {:ok, io_device, inode} ->
