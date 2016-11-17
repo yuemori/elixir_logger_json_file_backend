@@ -1,6 +1,8 @@
 defmodule LoggerJSONFileBackend do
   use GenEvent
 
+  @macro_env_fields Map.keys(%Macro.Env{})
+
   def init({__MODULE__, name}) do
     {:ok, configure(name, [])}
   end
@@ -48,7 +50,8 @@ defmodule LoggerJSONFileBackend do
   end
 
   defp take_metadata(metadata, _keys, false) do
-    metadata |> Enum.into(%{})
+    reject_keys = [:pid] ++ @macro_env_fields
+    metadata |> Keyword.drop(reject_keys) |> Enum.into(%{})
   end
   defp take_metadata(metadata, keys, true) do
     List.foldr keys, %{}, fn key, acc ->
