@@ -30,9 +30,9 @@ defmodule LoggerJSONFileBackend do
     end
   end
 
-  defp log_event(level, msg, ts, md, %{path: path, io_device: io_device, inode: inode, metadata: keys, json_encoder: json_encoder}=state) when is_binary(path) do
+  defp log_event(level, msg, ts, md, %{path: path, io_device: io_device, inode: inode, metadata: keys, json_encoder: json_encoder, triming: triming}=state) when is_binary(path) do
     if !is_nil(inode) and inode == inode(path) do
-      message = json_encoder.encode!(Map.merge(%{level: level, message: (msg |> IO.iodata_to_binary), time: format_time(ts)}, take_metadata(md, keys))) <> "\n"
+      message = json_encoder.encode!(Map.merge(%{level: level, message: (msg |> IO.iodata_to_binary), time: format_time(ts)}, take_metadata(md, keys, triming))) <> "\n"
       IO.write(io_device, message)
       {:ok, state}
     else
@@ -47,7 +47,10 @@ defmodule LoggerJSONFileBackend do
     |> Enum.join(" ")
   end
 
-  defp take_metadata(metadata, keys) do
+  defp take_metadata(metadata, _keys, false) do
+    metadata |> Enum.into(%{})
+  end
+  defp take_metadata(metadata, keys, true) do
     List.foldr keys, %{}, fn key, acc ->
       case Keyword.fetch(metadata, key) do
         {:ok, val} -> Map.merge(acc, %{key => val})
@@ -76,7 +79,7 @@ defmodule LoggerJSONFileBackend do
   end
 
   defp configure(name, opts) do
-    state = %{name: nil, path: nil, io_device: nil, inode: nil, level: nil, metadata: nil, json_encoder: nil}
+    state = %{name: nil, path: nil, io_device: nil, inode: nil, level: nil, metadata: nil, json_encoder: nil, triming: false}
     configure(name, opts, state)
   end
 
@@ -89,7 +92,8 @@ defmodule LoggerJSONFileBackend do
     metadata     = Keyword.get(opts, :metadata, [])
     path         = Keyword.get(opts, :path)
     json_encoder = Keyword.get(opts, :json_encoder, Poison)
+    triming      = Keyword.get(opts, :metadata_triming, true)
 
-    %{state | name: name, path: path, level: level, metadata: metadata, json_encoder: json_encoder}
+    %{state | name: name, path: path, level: level, metadata: metadata, json_encoder: json_encoder, triming: triming}
   end
 end

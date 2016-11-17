@@ -8,11 +8,12 @@ Configuration
 
 This logger backend provides follow options:
 
-| name         | description |
-| ------------ | ----------- |
-| path         | log file path. this option is "MUST" |
-| level        | minimum logging level. default is `:info` | 
-| metadata     | included metadata keys list. detault is empty list |
+| name          | description |
+| ------------- | ----------- |
+| path          | log file path. this option is "MUST" |
+| level         | minimum logging level. default is `:info` |
+| metadata      | included metadata keys list. detault is empty list |
+| metadata\_triming | if false, ignoring previous metadata options and all metadata are output. default is true |
 | json\_encoder | using json encoder. default [poison](https://github.com/devinus/poison) |
 
 You need to add logger backend setting

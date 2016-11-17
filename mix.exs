@@ -3,7 +3,7 @@ defmodule LoggerJSONFileBackend.Mixfile do
 
   def project do
     [app: :logger_json_file_backend,
-     version: "0.1.2",
+     version: "0.1.3",
      description: "Logger backend that write a json map per line to a file",
      elixir: "~> 1.2",
      package: package,
@@ -23,7 +23,7 @@ defmodule LoggerJSONFileBackend.Mixfile do
 
   defp package do
     [
-      maintainers: ["Hidetaka Kojo"],
+      maintainers: ["Hidetaka Kojo", "Lei Yuan"],
       licenses: ["ISC"],
       links: %{"GitHub" => "https://github.com/xflagstudio/elixir_logger_json_file_backend"}
     ]
