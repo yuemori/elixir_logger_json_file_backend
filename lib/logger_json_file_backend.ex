@@ -47,10 +47,10 @@ defmodule LoggerJSONFileBackend do
     |> Enum.join(" ")
   end
 
-  defp take_metadata(metadata, _keys, true) do
+  defp take_metadata(metadata, _keys, false) do
     metadata |> Enum.into(%{})
   end
-  defp take_metadata(metadata, keys, false) do
+  defp take_metadata(metadata, keys, true) do
     List.foldr keys, %{}, fn key, acc ->
       case Keyword.fetch(metadata, key) do
         {:ok, val} -> Map.merge(acc, %{key => val})
@@ -92,7 +92,7 @@ defmodule LoggerJSONFileBackend do
     metadata     = Keyword.get(opts, :metadata, [])
     path         = Keyword.get(opts, :path)
     json_encoder = Keyword.get(opts, :json_encoder, Poison)
-    triming      = Keyword.get(opts, :disable_metadata_triming, false)
+    triming      = Keyword.get(opts, :metadata_triming, true)
 
     %{state | name: name, path: path, level: level, metadata: metadata, json_encoder: json_encoder, triming: triming}
   end

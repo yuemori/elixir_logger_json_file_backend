@@ -13,7 +13,7 @@ This logger backend provides follow options:
 | path          | log file path. this option is "MUST" |
 | level         | minimum logging level. default is `:info` |
 | metadata      | included metadata keys list. detault is empty list |
-| disable\_metadata\_triming | if true, ignoring previous metadata options and all metadata are output. default is false |
+| metadata\_triming | if false, ignoring previous metadata options and all metadata are output. default is true |
 | json\_encoder | using json encoder. default [poison](https://github.com/devinus/poison) |
 
 You need to add logger backend setting
