@@ -6,27 +6,28 @@ defmodule LoggerJSONFileBackendTest do
   Logger.add_backend @backend
 
   setup do
-    config [path: "test/logs/test.log", level: :info, metadata: [:foo], metadata_triming: true, json_encoder: Poison]
+    config [path: "test/logs/test.log", level: :info, metadata: [:foo], metadata_triming: true, json_encoder: Poison, uuid: false]
     on_exit fn ->
-      path && File.rm_rf!(Path.dirname(path))
+      path() && File.rm_rf!(Path.dirname(path()))
     end
   end
 
   test "create log file" do
-    refute File.exists?(path)
+    refute File.exists?(path())
     Logger.info("msg body", [foo: "bar", baz: []])
-    assert File.exists?(path)
-    json_log = Poison.decode! log
+    assert File.exists?(path())
+    json_log = Poison.decode! log()
     assert json_log["level"] == "info"
     assert json_log["message"] == "msg body"
     assert Regex.match?(~r/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}/, json_log["time"])
     assert json_log["foo"] == "bar"
     assert is_nil(json_log["baz"])
+    assert not Map.has_key?(json_log, "uuid")
   end
 
   test "can log structured object" do
     Logger.info("msg body", [foo: %{bar: [:baz]}])
-    json_log = Poison.decode! log
+    json_log = Poison.decode! log()
     refute is_nil(json_log["foo"])
     assert json_log["foo"]["bar"] == ["baz"]
   end
@@ -34,7 +35,7 @@ defmodule LoggerJSONFileBackendTest do
   test "use another encoder" do
     config [path: "test/logs/test.log", level: :info, json_encoder: JSON, metadata: [:foo]]
     Logger.info("msg body", [foo: "bar", baz: []])
-    json_log = JSON.decode! log
+    json_log = JSON.decode! log()
     assert json_log["level"] == "info"
     assert json_log["message"] == "msg body"
     assert Regex.match?(~r/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}/, json_log["time"])
@@ -45,7 +46,7 @@ defmodule LoggerJSONFileBackendTest do
   test "does'nt trim metadata" do
     config [path: "test/logs/test.log", level: :info, json_encoder: JSON, metadata_triming: false, metadata: [:foo]]
     Logger.info("msg body", [foo: "bar", baz: %{hoge: 1, fuga: 2}])
-    json_log = JSON.decode! log
+    json_log = JSON.decode! log()
     assert json_log["level"] == "info"
     assert json_log["message"] == "msg body"
     assert Regex.match?(~r/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}/, json_log["time"])
@@ -54,9 +55,19 @@ defmodule LoggerJSONFileBackendTest do
     assert not Map.has_key?(json_log, :pid)
   end
 
+  test "add uuid" do
+    config [path: "test/logs/test.log", level: :info, uuid: true]
+    Logger.info("msg body", [foo: "bar", baz: %{hoge: 1, fuga: 2}])
+    json_log = Poison.decode! log()
+    assert json_log["level"] == "info"
+    assert json_log["message"] == "msg body"
+    assert Regex.match?(~r/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}/, json_log["time"])
+    assert Map.has_key?(json_log, "uuid")
+  end
+
   test "message should be string" do
     Logger.info(["msg", 32, "body"])
-    json_log = Poison.decode! log
+    json_log = Poison.decode! log()
     assert json_log["message"] == "msg body"
   end
 
@@ -66,7 +77,7 @@ defmodule LoggerJSONFileBackendTest do
   end
 
   defp log do
-    File.read!(path)
+    File.read!(path())
   end
 
   defp config(opts) do

@@ -36,9 +36,14 @@ defmodule LoggerJSONFileBackend do
     end
   end
 
-  defp log_event(level, msg, ts, md, %{path: path, io_device: io_device, inode: inode, metadata: keys, json_encoder: json_encoder, triming: triming}=state) when is_binary(path) do
+  defp log_event(level, msg, ts, md, %{path: path, io_device: io_device, inode: inode, metadata: keys, json_encoder: json_encoder, triming: triming, uuid: uuid}=state) when is_binary(path) do
     if !is_nil(inode) and inode == inode(path) do
-      message = json_encoder.encode!(Map.merge(%{level: level, message: (msg |> IO.iodata_to_binary), time: format_time(ts)}, take_metadata(md, keys, triming))) <> "\n"
+      message = case uuid do
+        true ->
+          json_encoder.encode!(Map.merge(%{level: level, uuid: UUID.uuid4(), message: (msg |> IO.iodata_to_binary), time: format_time(ts)}, take_metadata(md, keys, triming))) <> "\n"
+        false ->
+          json_encoder.encode!(Map.merge(%{level: level, message: (msg |> IO.iodata_to_binary), time: format_time(ts)}, take_metadata(md, keys, triming))) <> "\n"
+      end
       IO.write(io_device, message)
       {:ok, state}
     else
@@ -86,7 +91,7 @@ defmodule LoggerJSONFileBackend do
   end
 
   defp configure(name, opts) do
-    state = %{name: nil, path: nil, io_device: nil, inode: nil, level: nil, metadata: nil, json_encoder: nil, triming: false}
+    state = %{name: nil, path: nil, io_device: nil, inode: nil, level: nil, metadata: nil, json_encoder: nil, triming: false, uuid: false}
     configure(name, opts, state)
   end
 
@@ -100,7 +105,8 @@ defmodule LoggerJSONFileBackend do
     path         = Keyword.get(opts, :path)
     json_encoder = Keyword.get(opts, :json_encoder, Poison)
     triming      = Keyword.get(opts, :metadata_triming, true)
+    uuid         = Keyword.get(opts, :uuid, false)
 
-    %{state | name: name, path: path, level: level, metadata: metadata, json_encoder: json_encoder, triming: triming}
+    %{state | name: name, path: path, level: level, metadata: metadata, json_encoder: json_encoder, triming: triming, uuid: uuid}
   end
 end
