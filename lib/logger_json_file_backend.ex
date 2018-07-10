@@ -1,5 +1,5 @@
 defmodule LoggerJSONFileBackend do
-  use GenEvent
+  @behaviour :gen_event
 
   @macro_env_fields Map.keys(%Macro.Env{})
 
