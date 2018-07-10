@@ -53,7 +53,7 @@ defmodule LoggerJSONFileBackend do
   end
 
   defp format_time({date, time}) do
-    [Logger.Utils.format_date(date), Logger.Utils.format_time(time)]
+    [Logger.Formatter.format_date(date), Logger.Formatter.format_time(time)]
     |> Enum.map(&IO.iodata_to_binary/1)
     |> Enum.join(" ")
   end
@@ -81,7 +81,7 @@ defmodule LoggerJSONFileBackend do
         end
       other -> other
     end
-  end 
+  end
 
   defp inode(path) do
     case File.stat(path) do
