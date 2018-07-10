@@ -2,6 +2,8 @@ defmodule LoggerJSONFileBackend do
   @behaviour :gen_event
 
   @macro_env_fields Map.keys(%Macro.Env{})
+  @elixir_version :application.get_key(:elixir, :vsn) |> elem(1)
+  @formatter if @elixir_version >= '1.6.0', do: Logger.Formatter, else: Logger.Utils
 
   def init({__MODULE__, name}) do
     {:ok, configure(name, [])}
@@ -53,7 +55,7 @@ defmodule LoggerJSONFileBackend do
   end
 
   defp format_time({date, time}) do
-    [Logger.Formatter.format_date(date), Logger.Formatter.format_time(time)]
+    [@formatter.format_date(date), @formatter.format_time(time)]
     |> Enum.map(&IO.iodata_to_binary/1)
     |> Enum.join(" ")
   end
