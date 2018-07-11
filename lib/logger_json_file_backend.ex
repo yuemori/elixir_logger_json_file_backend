@@ -2,8 +2,7 @@ defmodule LoggerJSONFileBackend do
   @behaviour :gen_event
 
   @macro_env_fields Map.keys(%Macro.Env{})
-  @elixir_version :application.get_key(:elixir, :vsn) |> elem(1)
-  @formatter if @elixir_version >= '1.6.0', do: Logger.Formatter, else: Logger.Utils
+  @formatter if Version.compare(System.version(), "1.6.0") == :lt, do: Logger.Utils, else: Logger.Formatter
 
   def init({__MODULE__, name}) do
     {:ok, configure(name, [])}
