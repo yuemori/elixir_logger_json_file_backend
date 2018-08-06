@@ -1,7 +1,8 @@
 defmodule LoggerJSONFileBackend do
-  use GenEvent
+  @behaviour :gen_event
 
   @macro_env_fields Map.keys(%Macro.Env{})
+  @formatter if Version.compare(System.version(), "1.6.0") == :lt, do: Logger.Utils, else: Logger.Formatter
 
   def init({__MODULE__, name}) do
     {:ok, configure(name, [])}
@@ -53,7 +54,7 @@ defmodule LoggerJSONFileBackend do
   end
 
   defp format_time({date, time}) do
-    [Logger.Utils.format_date(date), Logger.Utils.format_time(time)]
+    [@formatter.format_date(date), @formatter.format_time(time)]
     |> Enum.map(&IO.iodata_to_binary/1)
     |> Enum.join(" ")
   end
@@ -81,7 +82,7 @@ defmodule LoggerJSONFileBackend do
         end
       other -> other
     end
-  end 
+  end
 
   defp inode(path) do
     case File.stat(path) do
