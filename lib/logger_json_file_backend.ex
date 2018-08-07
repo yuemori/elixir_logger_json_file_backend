@@ -4,18 +4,22 @@ defmodule LoggerJSONFileBackend do
   @macro_env_fields Map.keys(%Macro.Env{})
   @formatter if Version.compare(System.version(), "1.6.0") == :lt, do: Logger.Utils, else: Logger.Formatter
 
+  @impl :gen_event
   def init({__MODULE__, name}) do
     {:ok, configure(name, [])}
   end
 
+  @impl :gen_event
   def handle_call({:configure, opts}, %{name: name} = state) do
     {:ok, :ok, configure(name, opts, state)}
   end
 
+  @impl :gen_event
   def handle_call(:path, %{path: path} = state) do
     {:ok, {:ok, path}, state}
   end
 
+  @impl :gen_event
   def handle_event({level, _gl, {Logger, msg, ts, md}}, %{level: min_level}=state) do
     if is_nil(min_level) or Logger.compare_levels(level, min_level) != :lt do
       log_event(level, msg, ts, md, state)
@@ -24,7 +28,23 @@ defmodule LoggerJSONFileBackend do
     end
   end
 
+  @impl :gen_event
   def handle_event(:flush, state) do
+    {:ok, state}
+  end
+
+  @impl :gen_event
+  def handle_info(_msg, state) do
+    {:ok, state}
+  end
+
+  @impl :gen_event
+  def terminate(_reason, _state) do
+    :ok
+  end
+
+  @impl :gen_event
+  def code_change(_old, state, _extra) do
     {:ok, state}
   end
 
