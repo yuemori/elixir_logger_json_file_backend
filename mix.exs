@@ -3,15 +3,15 @@ defmodule LoggerJSONFileBackend.Mixfile do
 
   def project do
     [app: :logger_json_file_backend,
-     version: "0.1.7",
+     version: "0.1.8",
      description: "Logger backend that write a json map per line to a file",
-     elixir: "~> 1.2",
+     elixir: "~> 1.4",
      package: package(),
      deps: deps()]
   end
 
   def application do
-    [applications: [:logger]]
+    [extra_applications: [:logger]]
   end
 
   defp deps do
