@@ -1,7 +1,7 @@
 defmodule LoggerJSONFileBackend do
   @behaviour :gen_event
 
-  @macro_env_fields Map.keys(%Macro.Env{})
+  @macro_env_fields [:pid] ++ Map.keys(%Macro.Env{})
   @formatter if Version.compare(System.version(), "1.6.0") == :lt, do: Logger.Utils, else: Logger.Formatter
 
   @impl :gen_event
@@ -80,13 +80,18 @@ defmodule LoggerJSONFileBackend do
   end
 
   defp take_metadata(metadata, _keys, false) do
-    reject_keys = [:pid] ++ @macro_env_fields
+    reject_keys = @macro_env_fields
     metadata |> Keyword.drop(reject_keys) |> Enum.into(%{})
   end
   defp take_metadata(metadata, keys, true) do
     List.foldr keys, %{}, fn key, acc ->
       case Keyword.fetch(metadata, key) do
-        {:ok, val} -> Map.merge(acc, %{key => val})
+        {:ok, val} ->
+          if key == :pid do
+            Map.merge(acc, %{key => inspect(val)})
+          else
+            Map.merge(acc, %{key => val})
+          end
         :error     -> acc
       end
     end

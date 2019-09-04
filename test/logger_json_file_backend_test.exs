@@ -6,7 +6,7 @@ defmodule LoggerJSONFileBackendTest do
   Logger.add_backend @backend
 
   setup do
-    config [path: "test/logs/test.log", level: :info, metadata: [:foo], metadata_triming: true, json_encoder: Jason, uuid: false]
+    config [path: "test/logs/test.log", level: :info, metadata: [:foo, :pid], metadata_triming: true, json_encoder: Jason, uuid: false]
     on_exit fn ->
       path() && File.rm_rf!(Path.dirname(path()))
     end
@@ -21,6 +21,7 @@ defmodule LoggerJSONFileBackendTest do
     assert json_log["message"] == "msg body"
     assert Regex.match?(~r/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}/, json_log["time"])
     assert json_log["foo"] == "bar"
+    assert Regex.match?(~r/#PID<\d+\.\d+\.\d+>/, json_log["pid"])
     assert is_nil(json_log["baz"])
     assert not Map.has_key?(json_log, "uuid")
   end
@@ -43,7 +44,7 @@ defmodule LoggerJSONFileBackendTest do
     assert is_nil(json_log["baz"])
   end
 
-  test "does'nt trim metadata" do
+  test "doesn't trim metadata" do
     config [path: "test/logs/test.log", level: :info, json_encoder: Poison, metadata_triming: false, metadata: [:foo]]
     Logger.info("msg body", [foo: "bar", baz: %{hoge: 1, fuga: 2}])
     json_log = Poison.decode! log()
