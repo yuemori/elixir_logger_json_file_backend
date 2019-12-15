@@ -66,10 +66,16 @@ defmodule LoggerJSONFileBackendTest do
     assert Map.has_key?(json_log, "uuid")
   end
 
-  test "message should be string" do
+  test "allow message as string" do
     Logger.info(["msg", 32, "body"])
-    json_log = Jason.decode! log()
+    json_log = Jason.decode!(log())
     assert json_log["message"] == "msg body"
+  end
+
+  test "allow message as charlist" do
+    Logger.info(["msg ", ?π])
+    json_log = Jason.decode!(log())
+    assert json_log["message"] == "msg π"
   end
 
   defp path do

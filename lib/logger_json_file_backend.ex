@@ -61,9 +61,9 @@ defmodule LoggerJSONFileBackend do
     if !is_nil(inode) and inode == inode(path) do
       message = case uuid do
         true ->
-          json_encoder.encode!(Map.merge(%{level: level, uuid: UUID.uuid4(), message: (msg |> IO.iodata_to_binary), time: format_time(ts)}, take_metadata(md, keys, triming))) <> "\n"
+          json_encoder.encode!(Map.merge(%{level: level, uuid: UUID.uuid4(), message: (msg |> IO.chardata_to_string), time: format_time(ts)}, take_metadata(md, keys, triming))) <> "\n"
         false ->
-          json_encoder.encode!(Map.merge(%{level: level, message: (msg |> IO.iodata_to_binary), time: format_time(ts)}, take_metadata(md, keys, triming))) <> "\n"
+          json_encoder.encode!(Map.merge(%{level: level, message: (msg |> IO.chardata_to_string), time: format_time(ts)}, take_metadata(md, keys, triming))) <> "\n"
       end
       IO.write(io_device, message)
       {:ok, state}
