@@ -17,7 +17,7 @@ defmodule LoggerJSONFileBackend.Mixfile do
   defp deps do
     [
       {:jason, "~> 1.0", optional: true},
-      {:uuid, "~> 1.1"},
+      {:elixir_uuid, "~> 1.2"},
       {:poison, "~> 3.0", only: :test},
       {:ex_doc, ">= 0.0.0", only: :dev},
     ]
